@@ -68,13 +68,13 @@
   import '~/assets/css/sign.css'
   import '~/assets/css/iconfont.css'
 
-  import registerApi from '@/api/register'
+  import register from '@/api/register'
 
   export default {
     layout: 'sign',
     data() {
       return {
-        params: {
+        params: {//封装注册输入数据
           mobile: '',
           code: '',
           nickname: '',
@@ -86,7 +86,41 @@
       }
     },
     methods: {
-      checkPhone (rule, value, callback) {
+      //通过手机号发送验证码
+      getCodeFun(){
+register.send(this.params.mobile).then(res=>{
+  //发送成功  就开始60秒倒计时
+  this.timeDown();
+})
+      },
+      //注册提交的方法
+      submitRegister(){
+register.submitRegister(this.params).then(res=>{
+  //提示注册成功
+  this.$message({
+    type:'success',
+    message:'注册成功'
+  })
+  //跳转到登录页面
+  this.$router.push({path:'/login'})
+})
+      },
+     // 倒计时
+      timeDown() {
+        let result = setInterval(() => {
+          --this.second;
+          this.codeTest = this.second
+          if (this.second < 1) {
+            clearInterval(result);
+            this.sending = true;
+            //this.disabled = false;
+            this.second = 60;
+            this.codeTest = "获取验证码"
+          }
+        }, 1000);
+
+      },
+      checkPhone (rule, value, callback) {//手机号校验规则
         //debugger
         if (!(/^1[34578]\d{9}$/.test(value))) {
           return callback(new Error('手机号码格式不正确'))
