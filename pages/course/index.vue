@@ -31,8 +31,8 @@
             </dt>
             <dd class="c-s-dl-li">
               <ul class="clearfix">
-                <li v-for="(item,index) in subSubjectList" :key="index"><!--二级分类-->
-                  <a title="职称英语" href="#">{{item.title}}</a>
+                <li v-for="(item,index) in subSubjectList" :key="index" :class="{active:twoIndex==index}"><!--二级分类-->
+                  <a title="职称英语" href="#" @click="searchTwo(item.id,index)">{{item.title}}</a>
                 </li>
 
               </ul>
@@ -49,15 +49,19 @@
           </section>
           <section class="fl">
             <ol class="js-tap clearfix">
-              <li>
-                <a title="关注度" href="#">关注度</a>
+              <li :class="{'current bg-orange':buyCountSort!=''}"><!--buyCountSort不等于空才生效-->
+                <a title="销量" href="javascript:void(0);" @click="searchBuyCount()">销量
+                  <span :class="{hide:buyCountSort==''}">↓</span>
+                </a>
               </li>
-              <li>
-                <a title="最新" href="#">最新</a>
+              <li :class="{'current bg-orange':gmtCreateSort!=''}">
+                <a title="最新" href="javascript:void(0);" @click="searchGmtCreate()">最新
+                  <span :class="{hide:gmtCreateSort==''}">↓</span>
+                </a>
               </li>
-              <li class="current bg-orange">
-                <a title="价格" href="#">价格&nbsp;
-                  <span>↓</span>
+              <li :class="{'current bg-orange':priceSort!=''}">
+                <a title="价格" href="javascript:void(0);" @click="searchPrice()">价格&nbsp;
+                  <span :class="{hide:priceSort==''}">↓</span>
                 </a>
               </li>
             </ol>
@@ -203,6 +207,50 @@ this.initSubject();
            this.subSubjectList=oneSubject.children
           }
         }
+      },
+      searchTwo(id,index){
+//赋值index  显示样式
+        this.twoIndex=index
+
+        //把二级分类点击的id值付给searchObj
+        this.searchObj.subjectId=id
+        //点击某个二级分类做出查询
+        this.gotoPage(1)
+  },
+      //6按销量排序
+      searchBuyCount(){
+//设置对应变量值  让样式生效   另外两个样式就不能生效
+        this.buyCountSort=1;
+        this.gmtCreateSort="";
+        this.priceSort="";
+//把值付给searchObj   gotoPage要用到
+        this.searchObj.buyCountSort = this.buyCountSort;
+        this.searchObj.gmtCreateSort = this.gmtCreateSort;
+        this.searchObj.priceSort = this.priceSort;
+        this.gotoPage(1)
+      },
+      //7 按时间排序
+      searchGmtCreate(){
+        this.buyCountSort="";
+        this.gmtCreateSort=1;
+        this.priceSort="";
+
+        this.searchObj.buyCountSort = this.buyCountSort;
+        this.searchObj.gmtCreateSort = this.gmtCreateSort;
+        this.searchObj.priceSort = this.priceSort;
+        this.gotoPage(1)
+
+      },
+      searchPrice(){
+
+        this.buyCountSort="";
+        this.gmtCreateSort="";
+        this.priceSort=1;
+
+        this.searchObj.buyCountSort = this.buyCountSort;
+        this.searchObj.gmtCreateSort = this.gmtCreateSort;
+        this.searchObj.priceSort = this.priceSort;
+        this.gotoPage(1)
       }
     }
   };
