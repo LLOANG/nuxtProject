@@ -18,8 +18,8 @@
                 <li>
                   <a title="全部" href="#">全部</a>
                 </li>
-                <li  v-for="(item,index) in this.subjectNestedList" :key="index">
-                  <a :title="item.title" href="#">{{item.title}}</a>
+                <li  v-for="(item,index) in this.subjectNestedList" :key="index" :class="{active:oneIndex==index}">
+                  <a :title="item.title" href="#" @click="searchOne(item.id,index)">{{item.title}}</a>
                 </li>
 
               </ul>
@@ -84,7 +84,7 @@
                     <a href="/course/1" :title="item.title" class="course-title fsize18 c-333">{{item.title}}</a>
                   </h3>
                   <section class="mt10 hLh20 of">
-                    <span class="fr jgTag bg-green">
+                    <span class="fr jgTag bg-green" v-if="Number(item.price)===0">
                       <i class="c-fff fsize12 f-fA">免费</i>
                     </span>
                     <span class="fl jgAttr c-ccc f-fA">
@@ -102,13 +102,35 @@
         <!-- 公共分页 开始 -->
         <div>
           <div class="paging">
-            <a class="undisable" title>首</a>
-            <a id="backpage" class="undisable" href="#" title>&lt;</a>
-            <a href="#" title class="current undisable">1</a>
-            <a href="#" title>2</a>
-            <a id="nextpage" href="#" title>&gt;</a>
-            <a href="#" title>末</a>
-            <div class="clear"></div>
+            <!-- undisable这个class是否存在，取决于数据属性hasPrevious -->
+            <a
+              :class="{undisable: !data.hasPrevious}"
+              href="#"
+              title="首页"
+              @click.prevent="gotoPage(1)">首</a>
+            <a
+              :class="{undisable: !data.hasPrevious}"
+              href="#"
+              title="前一页"
+              @click.prevent="gotoPage(data.current-1)">&lt;</a>
+            <a
+              v-for="page in data.pages"
+              :key="page"
+              :class="{current: data.current == page, undisable: data.current == page}"
+              :title="'第'+page+'页'"
+              href="#"
+              @click.prevent="gotoPage(page)">{{ page }}</a>
+            <a
+              :class="{undisable: !data.hasNext}"
+              href="#"
+              title="后一页"
+              @click.prevent="gotoPage(data.current+1)">&gt;</a>
+            <a
+              :class="{undisable: !data.hasNext}"
+              href="#"
+              title="末页"
+              @click.prevent="gotoPage(data.pages)">末</a>
+            <div class="clear"/>
           </div>
         </div>
         <!-- 公共分页 结束 -->
@@ -155,10 +177,44 @@ this.initSubject();
       },
       //3 分页切换的方法
       gotoPage(page){
-        course.getCoursePageList(page,8).then(res=>{
+        course.getCoursePageList(page,8,this.searchObj).then(res=>{
           this.data=res.data.data
         })
+      },
+      //4  点击某个一级分类  查询对应二级分类
+      searchOne(subjectParentId,index){
+        //把传递过来的index值赋值给oneIndex  让css生效
+        this.oneIndex=index
+        this.twoIndex=-1
+        this.searchObj.subjectId=""
+        this.subSubjectList=[]
+
+      //把一级分类点击的id值付给searchObj
+        this.searchObj.subjectParentId=subjectParentId
+        //点击某个一级分类做出查询
+        this.gotoPage(1)
+
+//拿着点击一级分类id和所有一级分类id比较
+        //如果id相同  从一级分类里面获取对应的二级分类
+        for(let i=0;i<this.subjectNestedList.length;i++){
+          var oneSubject=this.subjectNestedList[i];
+          if(oneSubject.id==subjectParentId){
+            //从一级分类获取对应的二级分类
+           this.subSubjectList=oneSubject.children
+          }
+        }
       }
     }
   };
 </script>
+<style scoped>
+  .active {
+    background: #bdbdbd;
+  }
+  .hide {
+    display: none;
+  }
+  .show {
+    display: block;
+  }
+</style>
