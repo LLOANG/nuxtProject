@@ -43,12 +43,15 @@
 <script>
   import '~/assets/css/sign.css'
   import '~/assets/css/iconfont.css'
+  import cookie from 'js-cookie'
+  import login from '@/api/login'
 
   export default {
     layout: 'sign',
 
     data () {
       return {
+        //用于封装登录手机号和密码对象
         user:{
           mobile:'',
           password:''
@@ -58,7 +61,27 @@
     },
 
     methods: {
+      //登录方法
+      submitLogin(){
+        //调用接口进行登录   返回token字符串
+      login.login(this.user).then(response=>{
+        //获取token字符串放到cookie里面   localhost--作用范围
+        cookie.set('token', response.data.data.token, { domain: 'localhost' })
 
+        //调用接口  根据token获取用户信息  为了首页面显示
+        login.getLoginUserInfo().then(res=>{
+          this.loginInfo=res.data.data.userInfo;
+          //获取返回的用户信息  放到cookie里面去
+          cookie.set("ucenter",res.data.data.userInfo,{domain:'localhost'})
+
+          //跳转页面
+          window.location.href="/";
+        })
+      })
+      },
+      checkPhone(){
+
+      }
     }
   }
 </script>

@@ -134,6 +134,36 @@
   import "~/assets/css/theme.css";
   import "~/assets/css/global.css";
   import "~/assets/css/web.css";
+  import cookie from 'js-cookie'
+  import { MessageBox, Message } from 'element-ui'
 
-  export default {};
+  export default {
+
+    data(){
+      return {
+        token: '',
+        loginInfo: {
+          id: '',
+          age: '',
+          avatar: '',
+          mobile: '',
+          nickname: '',
+          sex: ''
+        }
+      }
+    },
+    created(){
+this.showInfo();
+    },
+    methods:{
+//创建方法  从cokie获取用户信息
+      showInfo(){
+        var userStr= cookie.get("ucenter");//这个userStr是个json字符串   例如 str="{'name':'lucky','age':20}"   带了引号  应该把引号去掉
+        //吧字符串转换成json对象
+        if(userStr){
+          this.loginInfo=JSON.parse(userStr)
+        }
+      }
+    }
+  };
 </script>
