@@ -163,6 +163,14 @@ this.showInfo();
         if(userStr){
           this.loginInfo=JSON.parse(userStr)
         }
+      },
+      logout(){
+        //debugger
+        cookie.set('ucenter', "", {domain: 'localhost'})
+        cookie.set('token', "", {domain: 'localhost'})
+
+        //跳转页面
+        window.location.href = "/"
       }
     }
   };
